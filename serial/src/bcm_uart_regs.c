@@ -50,5 +50,5 @@ bool bcm_uart_regs_is_rx_ready(
 int bcm_uart_regs_rx_char(
         bcm_uart_regs_t *regs
 ) {
-    return (int)(regs->mu_io & MASK_UNSAFE(8));
+    return (int) (regs->mu_io & MASK_UNSAFE(8));
 }
