@@ -2,6 +2,7 @@
 
 #include <sel4cp.h>
 #include <sel4/sel4.h>
+#include <stdbool.h>
 
 #include "imx_uart.h"
 #include "shared_ringbuffer.h"
