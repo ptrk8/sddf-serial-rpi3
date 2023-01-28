@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <system>
-    <!-- This is a 4KB memory region at the physical address of 0x30890000,
-    which is where the UART device registers are mapped to. -->
+    <!-- This is a 4KB, page-aligned memory region at the physical address of 0x3f215000,
+    which is where the UART device registers are mapped to. Note, we are mapping
+    in the Rpi3B's Mini UART device registers and NOT its PL011 UART device
+    registers. -->
     <memory_region
             name="uart"
             size="0x10_000"
-            phys_addr="0x30890000"/>
+            phys_addr="0x3f215000"/>
     <!-- In the SDDF's design-documentation, `shared_dma` is referred to as the
     "Data Region". `shared_dma` is an array of I/O buffers that will be used to
     pass/transport data from `serial_client` to `serial_driver` and vice-versa.
