@@ -23,21 +23,21 @@ target_include_directories(serial_rpi3b_lib_bit PUBLIC include/)
 add_library(serial_rpi3b_lib_serial_parity src/serial_parity.c)
 target_include_directories(serial_rpi3b_lib_serial_parity PUBLIC include/)
 
-add_library(serial_rpi3b_lib_imx_uart_regs src/imx_uart_regs.c)
-target_include_directories(serial_rpi3b_lib_imx_uart_regs PUBLIC include/)
+add_library(serial_rpi3b_lib_bcm_uart_regs src/bcm_uart_regs.c)
+target_include_directories(serial_rpi3b_lib_bcm_uart_regs PUBLIC include/)
 target_link_libraries(
-        serial_rpi3b_lib_imx_uart_regs
+        serial_rpi3b_lib_bcm_uart_regs
         lib_sel4cp_rpi3b
         serial_rpi3b_lib_serial_parity
         serial_rpi3b_lib_bit
 )
 
-add_library(serial_rpi3b_lib_imx_uart src/imx_uart.c)
-target_include_directories(serial_rpi3b_lib_imx_uart PUBLIC include/)
+add_library(serial_rpi3b_lib_bcm_uart src/bcm_uart.c)
+target_include_directories(serial_rpi3b_lib_bcm_uart PUBLIC include/)
 target_link_libraries(
-        serial_rpi3b_lib_imx_uart
+        serial_rpi3b_lib_bcm_uart
         lib_sel4cp_rpi3b
-        serial_rpi3b_lib_imx_uart_regs
+        serial_rpi3b_lib_bcm_uart_regs
 )
 
 add_library(serial_rpi3b_lib_serial_driver src/serial_driver.c)
@@ -45,7 +45,7 @@ target_include_directories(serial_rpi3b_lib_serial_driver PUBLIC include/)
 target_link_libraries(
         serial_rpi3b_lib_serial_driver
         lib_sel4cp_rpi3b
-        serial_rpi3b_lib_imx_uart
+        serial_rpi3b_lib_bcm_uart
         serial_rpi3b_lib_shared_ringbuffer
 )
 

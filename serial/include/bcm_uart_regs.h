@@ -14,8 +14,8 @@
 
 #define MASK_UNSAFE(x) ((BIT(x) - 1ul))
 
-typedef volatile struct imx_uart_regs imx_uart_regs_t;
-struct imx_uart_regs {
+typedef volatile struct bcm_uart_regs bcm_uart_regs_t;
+struct bcm_uart_regs {
     uint32_t mu_io;         // 0x40: mini UART I/O Data
     uint32_t mu_ier;        // 0x44: mini UART interrupt enable
     uint32_t mu_iir;        // 0x48: mini UART interrupt identify
@@ -54,51 +54,51 @@ struct imx_uart_regs {
 #define MU_LCR_DATASIZE  BIT(0)
 
 /**
- * Returns a pointer to the imx_uart_regs struct.
+ * Returns a pointer to the bcm_uart_regs struct.
  * @param base_vaddr
  * @return
  */
-imx_uart_regs_t *imx_uart_regs_get(uintptr_t base_vaddr);
+bcm_uart_regs_t *bcm_uart_regs_get(uintptr_t base_vaddr);
 
 /**
  * Returns `True` if Transmit FIFO buffer is not empty and `False` otherwise.
  * @param regs
  * @return
  */
-bool imx_uart_regs_is_tx_fifo_busy(
-        imx_uart_regs_t *regs
+bool bcm_uart_regs_is_tx_fifo_busy(
+        bcm_uart_regs_t *regs
 );
 
 /**
  * Disables Receive Interrupt Requests.
  * @param regs
  */
-void imx_uart_regs_disable_rx_irq(
-        imx_uart_regs_t *regs
+void bcm_uart_regs_disable_rx_irq(
+        bcm_uart_regs_t *regs
 );
 
 /**
  * Disables UART.
  * @param regs
  */
-void imx_uart_regs_disable(
-        imx_uart_regs_t *regs
+void bcm_uart_regs_disable(
+        bcm_uart_regs_t *regs
 );
 
 /**
  * Enables UART.
  * @param regs
  */
-void imx_uart_regs_enable(
-        imx_uart_regs_t *regs
+void bcm_uart_regs_enable(
+        bcm_uart_regs_t *regs
 );
 
 /**
  * Enables Receive Interrupt Requests.
  * @param regs
  */
-void imx_uart_regs_enable_rx_irq(
-        imx_uart_regs_t *regs
+void bcm_uart_regs_enable_rx_irq(
+        bcm_uart_regs_t *regs
 );
 
 /**
@@ -106,8 +106,8 @@ void imx_uart_regs_enable_rx_irq(
  * @param regs
  * @param ch
  */
-void imx_uart_regs_tx_char(
-        imx_uart_regs_t *regs,
+void bcm_uart_regs_tx_char(
+        bcm_uart_regs_t *regs,
         int ch
 );
 

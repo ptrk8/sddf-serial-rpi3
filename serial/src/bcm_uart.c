@@ -1,46 +1,46 @@
-#include "imx_uart.h"
+#include "bcm_uart.h"
 
 
-bool imx_uart_init(
-        imx_uart_t *imx_uart,
+bool bcm_uart_init(
+        bcm_uart_t *bcm_uart,
         uintptr_t base_vaddr,
         bool auto_insert_carriage_return
 ) {
-    if (imx_uart == NULL) {
+    if (bcm_uart == NULL) {
         return false;
     }
     /* Save pointer to the registers. */
-    imx_uart->regs = imx_uart_regs_get(base_vaddr);
+    bcm_uart->regs = bcm_uart_regs_get(base_vaddr);
     /* Save user's auto carriage return preference. */
-    imx_uart->auto_insert_carriage_return = auto_insert_carriage_return;
+    bcm_uart->auto_insert_carriage_return = auto_insert_carriage_return;
     /* Disable RX interrupts */
-    imx_uart_regs_disable_rx_irq(imx_uart->regs);
+    bcm_uart_regs_disable_rx_irq(bcm_uart->regs);
     /* Disable RX and TX */
-    imx_uart_regs_disable(imx_uart->regs);
+    bcm_uart_regs_disable(bcm_uart->regs);
     /* TODO: line configuration? */
     /* Enable RX and TX */
-    imx_uart_regs_enable(imx_uart->regs);
+    bcm_uart_regs_enable(bcm_uart->regs);
     /* Enable receive interrupts */
-    imx_uart_regs_enable_rx_irq(imx_uart->regs);
+    bcm_uart_regs_enable_rx_irq(bcm_uart->regs);
     /* Return true for successful initialisation. */
     return true;
 }
 
 
-int imx_uart_put_char(
-        imx_uart_t *imx_uart,
+int bcm_uart_put_char(
+        bcm_uart_t *bcm_uart,
         int c
 ) {
-    imx_uart_regs_t *regs = imx_uart->regs;
+    bcm_uart_regs_t *regs = bcm_uart->regs;
 
-    if (imx_uart_regs_is_tx_fifo_busy(regs)) {
+    if (bcm_uart_regs_is_tx_fifo_busy(regs)) {
         return -1;
     }
     /* If `auto_insert_carriage_return` is enabled, we first set the `\r`
      * character and then set the `\n` character. */
-    if (c == '\n' && imx_uart->auto_insert_carriage_return) {
+    if (c == '\n' && bcm_uart->auto_insert_carriage_return) {
         /* Write carriage return first */
-        imx_uart_regs_tx_char(regs, '\r');
+        bcm_uart_regs_tx_char(regs, '\r');
         /* if we transform a '\n' (LF) into '\r\n' (CR+LF) this shall become an
          * atom, ie we don't want CR to be sent and then fail at sending LF
          * because the TX FIFO is full. Basically there are two options:
@@ -50,19 +50,19 @@ int imx_uart_put_char(
          * console for logging, so blocking seems acceptable in this special
          * case.
          */
-        while (imx_uart_regs_is_tx_fifo_busy(regs)) {
+        while (bcm_uart_regs_is_tx_fifo_busy(regs)) {
             /* busy loop */
         }
     }
 
-    imx_uart_regs_tx_char(regs, c);
+    bcm_uart_regs_tx_char(regs, c);
     return c;
 }
 
-int imx_uart_get_char(
-        imx_uart_t *imx_uart
+int bcm_uart_get_char(
+        bcm_uart_t *bcm_uart
 ) {
-    imx_uart_regs_t *regs = imx_uart->regs;
+    bcm_uart_regs_t *regs = bcm_uart->regs;
     uint32_t reg = 0;
     int c = -1;
 
