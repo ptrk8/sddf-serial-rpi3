@@ -6,6 +6,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "shared_ringbuffer.h"
 #include "shared_dma.h"
