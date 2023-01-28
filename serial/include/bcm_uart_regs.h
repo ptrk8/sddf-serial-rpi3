@@ -7,10 +7,10 @@
 #include "serial_parity.h"
 #include "bit.h"
 
-#define UART_REF_CLK 12096000
-#ifndef UART_REF_CLK
-#error "UART_REF_CLK undefined"
-#endif
+//#define UART_REF_CLK 12096000
+//#ifndef UART_REF_CLK
+//#error "UART_REF_CLK undefined"
+//#endif
 
 #define MASK_UNSAFE(x) ((BIT(x) - 1ul))
 
@@ -109,5 +109,23 @@ void bcm_uart_regs_enable_rx_irq(
 void bcm_uart_regs_tx_char(
         bcm_uart_regs_t *regs,
         int ch
+);
+
+/**
+ * Returns True if the Receive buffer is ready to be read and `false` otherwise.
+ * @param regs
+ * @return
+ */
+bool bcm_uart_regs_is_rx_ready(
+        bcm_uart_regs_t *regs
+);
+
+/**
+ * Returns the character in the Receive buffer..
+ * @param regs
+ * @return
+ */
+int bcm_uart_regs_rx_char(
+        bcm_uart_regs_t *regs
 );
 

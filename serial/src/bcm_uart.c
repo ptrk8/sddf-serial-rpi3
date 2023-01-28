@@ -65,8 +65,8 @@ int bcm_uart_get_char(
     bcm_uart_regs_t *regs = bcm_uart->regs;
     int c = -1;
 
-    if (regs->mu_lsr & MU_LSR_DATAREADY) {
-        c = (int)(regs->mu_io & MASK_UNSAFE(8));
+    if (bcm_uart_regs_is_rx_ready(regs)) {
+        c = bcm_uart_regs_rx_char(regs);
     }
 
     return c;

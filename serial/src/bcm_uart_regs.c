@@ -40,3 +40,15 @@ void bcm_uart_regs_tx_char(
 ) {
     regs->mu_io = (ch & MASK_UNSAFE(8));
 }
+
+bool bcm_uart_regs_is_rx_ready(
+        bcm_uart_regs_t *regs
+) {
+    return regs->mu_lsr & MU_LSR_DATAREADY;
+}
+
+int bcm_uart_regs_rx_char(
+        bcm_uart_regs_t *regs
+) {
+    return (int)(regs->mu_io & MASK_UNSAFE(8));
+}
