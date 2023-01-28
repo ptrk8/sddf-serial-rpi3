@@ -63,15 +63,12 @@ int bcm_uart_get_char(
         bcm_uart_t *bcm_uart
 ) {
     bcm_uart_regs_t *regs = bcm_uart->regs;
-    uint32_t reg = 0;
     int c = -1;
 
-//    if (regs->sr2 & UART_SR2_RXFIFO_RDR) {
-//        reg = regs->rxd;
-//        if (reg & UART_URXD_READY_MASK) {
-//            c = reg & UART_BYTE_MASK;
-//        }
-//    }
+    if (regs->mu_lsr & MU_LSR_DATAREADY) {
+        c = (int)(regs->mu_io & MASK_UNSAFE(8));
+    }
+
     return c;
 }
 
