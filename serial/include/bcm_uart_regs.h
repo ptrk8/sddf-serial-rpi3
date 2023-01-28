@@ -5,9 +5,7 @@
 #include <stdbool.h>
 
 #include "serial_parity.h"
-#include "bit.h"
-
-#define MASK_UNSAFE(x) ((BIT(x) - 1ul))
+#include "arith.h"
 
 typedef volatile struct bcm_uart_regs bcm_uart_regs_t;
 struct bcm_uart_regs {

@@ -17,8 +17,8 @@ target_link_libraries(
         serial_rpi3b_lib_fence
 )
 
-add_library(serial_rpi3b_lib_bit src/bit.c)
-target_include_directories(serial_rpi3b_lib_bit PUBLIC include/)
+add_library(serial_rpi3b_lib_arith src/arith.c)
+target_include_directories(serial_rpi3b_lib_arith PUBLIC include/)
 
 add_library(serial_rpi3b_lib_serial_parity src/serial_parity.c)
 target_include_directories(serial_rpi3b_lib_serial_parity PUBLIC include/)
@@ -29,7 +29,7 @@ target_link_libraries(
         serial_rpi3b_lib_bcm_uart_regs
         lib_sel4cp_rpi3b
         serial_rpi3b_lib_serial_parity
-        serial_rpi3b_lib_bit
+        serial_rpi3b_lib_arith
 )
 
 add_library(serial_rpi3b_lib_bcm_uart src/bcm_uart.c)

@@ -56,7 +56,7 @@ SERIAL_DRIVER_OBJS := \
 	bcm_uart_regs.o \
 	bcm_uart.o \
 	serial_parity.o \
-	bit.o \
+	arith.o \
 	libsharedringbuffer/shared_ringbuffer.o \
 	shared_dma.o \
 
