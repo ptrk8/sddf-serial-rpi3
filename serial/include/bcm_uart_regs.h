@@ -7,11 +7,6 @@
 #include "serial_parity.h"
 #include "bit.h"
 
-//#define UART_REF_CLK 12096000
-//#ifndef UART_REF_CLK
-//#error "UART_REF_CLK undefined"
-//#endif
-
 #define MASK_UNSAFE(x) ((BIT(x) - 1ul))
 
 typedef volatile struct bcm_uart_regs bcm_uart_regs_t;
