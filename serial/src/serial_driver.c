@@ -143,7 +143,12 @@ void init(void) {
     /* Initialise our `global_serial_driver` struct. */
     int ret_serial_driver_init = serial_driver_init(
             serial_driver,
-            uart_base_vaddr,
+            /* As explained in `serial.system`, `uart_base_vaddr` is mapped to a
+             * page-aligned virtual address; however, the Mini UART device is
+             * actually mapped to a virtual address that is 0x40 offset from the
+             * `uart_base_vaddr` virtual address, which is why we add 0x40 to
+             * `uart_base_vaddr` */
+            uart_base_vaddr + 0x40,
             true
     );
     if (ret_serial_driver_init < 0) {

@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <system>
-    <!-- This is a 4KB, page-aligned memory region at the physical address of 0x3f215000,
-    which is where the UART device registers are mapped to. Note, we are mapping
-    in the Rpi3B's Mini UART device registers and NOT its PL011 UART device
-    registers. -->
+    <!-- This is a 4KB, page-aligned memory region at the physical address of
+    0x3f215000, which is where the UART device registers are mapped to. Note, we
+    are mapping in the Rpi3B's "Mini" UART device registers and NOT its "PL011"
+    UART device registers. An important aspect to note that the base of the Mini
+    UART device registers are actually mapped to 0x3f215040 in physical memory.
+    Unfortunately, 0x3f215040 is not a 4K page-aligned address, so we can't map
+    a page at that physical address. As such in our `serial_driver.c` code, we
+    must remember to obtain the real base address of the Mini UART device by
+    adding 0x40 to 0x3f215000. -->
     <memory_region
             name="uart"
             size="0x10_000"
