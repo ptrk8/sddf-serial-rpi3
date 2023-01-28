@@ -12,62 +12,46 @@
 #error "UART_REF_CLK undefined"
 #endif
 
-#define UART_SR1_RRDY          BIT( 9)
-#define UART_SR1_TRDY          BIT(13)
-/* CR1 */
-#define UART_CR1_UARTEN        BIT( 0)
-#define UART_CR1_RRDYEN        BIT( 9)
-/* CR2 */
-#define UART_CR2_SRST          BIT( 0)
-#define UART_CR2_RXEN          BIT( 1)
-#define UART_CR2_TXEN          BIT( 2)
-#define UART_CR2_ATEN          BIT( 3)
-#define UART_CR2_RTSEN         BIT( 4)
-#define UART_CR2_WS            BIT( 5)
-#define UART_CR2_STPB          BIT( 6)
-#define UART_CR2_PROE          BIT( 7)
-#define UART_CR2_PREN          BIT( 8)
-#define UART_CR2_RTEC          BIT( 9)
-#define UART_CR2_ESCEN         BIT(11)
-#define UART_CR2_CTS           BIT(12)
-#define UART_CR2_CTSC          BIT(13)
-#define UART_CR2_IRTS          BIT(14)
-#define UART_CR2_ESCI          BIT(15)
-/* CR3 */
-#define UART_CR3_RXDMUXDEL     BIT( 2)
-/* FCR */
-#define UART_FCR_RFDIV(x)      ((x) * BIT(7))
-#define UART_FCR_RFDIV_MASK    UART_FCR_RFDIV(0x7)
-#define UART_FCR_RXTL(x)       ((x) * BIT(0))
-#define UART_FCR_RXTL_MASK     UART_FCR_RXTL(0x1F)
-/* SR2 */
-#define UART_SR2_RXFIFO_RDR    BIT(0)
-#define UART_SR2_TXFIFO_EMPTY  BIT(14)
-/* RXD */
-#define UART_URXD_READY_MASK   BIT(15)
-#define UART_BYTE_MASK         0xFF
+#define MASK_UNSAFE(x) ((BIT(x) - 1ul))
 
 typedef volatile struct imx_uart_regs imx_uart_regs_t;
 struct imx_uart_regs {
-    uint32_t rxd;      /* 0x000 Receiver Register */
-    uint32_t res0[15];
-    uint32_t txd;      /* 0x040 Transmitter Register */
-    uint32_t res1[15];
-    uint32_t cr1;      /* 0x080 Control Register 1 */
-    uint32_t cr2;      /* 0x084 Control Register 2 */
-    uint32_t cr3;      /* 0x088 Control Register 3 */
-    uint32_t cr4;      /* 0x08C Control Register 4 */
-    uint32_t fcr;      /* 0x090 FIFO Control Register */
-    uint32_t sr1;      /* 0x094 Status Register 1 */
-    uint32_t sr2;      /* 0x098 Status Register 2 */
-    uint32_t esc;      /* 0x09c Escape Character Register */
-    uint32_t tim;      /* 0x0a0 Escape Timer Register */
-    uint32_t bir;      /* 0x0a4 BRM Incremental Register */
-    uint32_t bmr;      /* 0x0a8 BRM Modulator Register */
-    uint32_t brc;      /* 0x0ac Baud Rate Counter Register */
-    uint32_t onems;    /* 0x0b0 One Millisecond Register */
-    uint32_t ts;       /* 0x0b4 Test Register */
+    uint32_t mu_io;         // 0x40: mini UART I/O Data
+    uint32_t mu_ier;        // 0x44: mini UART interrupt enable
+    uint32_t mu_iir;        // 0x48: mini UART interrupt identify
+    uint32_t mu_lcr;        // 0x4c: mini UART line control
+    uint32_t mu_mcr;        // 0x50: mini UART modem control
+    uint32_t mu_lsr;        // 0x54: mini UART line status
+    uint32_t mu_msr;        // 0x58: mini UART modem status
+    uint32_t mu_scratch;    // 0x5c: mini UART scratch
+    uint32_t mu_cntl;       // 0x60: mini UART extra control
+    uint32_t mu_stat;       // 0x64: mini UART extra status
+    uint32_t mu_baud;       // 0x68: mini UART baudrate
 };
+
+/* Modem Status Interrupt (MSI) bit 3,
+ * Line Status Interrupt (LSI) bit 2,
+ * and receive data (RXD) bit 0 need
+ * to be enabled in order to receive
+ * interrupts.
+ */
+#define MU_IER_ENA_RX_IRQ  (BIT(3) | BIT(2) | BIT(0))
+
+/* This bit is set if the transmit FIFO can accept at least one byte.*/
+#define MU_LSR_TXEMPTY   BIT(5)
+
+/* This bit is set if the transmit FIFO is empty and the
+ * transmitter is idle. (Finished shifting out the last bit). */
+#define MU_LSR_TXIDLE    BIT(6)
+#define MU_LSR_RXOVERRUN BIT(1)
+#define MU_LSR_DATAREADY BIT(0)
+
+#define MU_CNTL_RXE      BIT(0)
+#define MU_CNTL_TXE      BIT(1)
+
+#define MU_LCR_DLAB      BIT(7)
+#define MU_LCR_BREAK     BIT(6)
+#define MU_LCR_DATASIZE  BIT(0)
 
 /**
  * Returns a pointer to the imx_uart_regs struct.
@@ -75,23 +59,6 @@ struct imx_uart_regs {
  * @return
  */
 imx_uart_regs_t *imx_uart_regs_get(uintptr_t base_vaddr);
-
-/**
- * Sets the Line Protocol to be used by the serial device.
- * @param regs
- * @param bps
- * @param char_size
- * @param parity
- * @param stop_bits
- * @return
- */
-int imx_uart_regs_set_line_protocol(
-        imx_uart_regs_t *regs,
-        long bps,
-        int char_size,
-        serial_parity_t parity,
-        int stop_bits
-);
 
 /**
  * Returns `True` if Transmit FIFO buffer is not empty and `False` otherwise.
@@ -102,4 +69,45 @@ bool imx_uart_regs_is_tx_fifo_busy(
         imx_uart_regs_t *regs
 );
 
+/**
+ * Disables Receive Interrupt Requests.
+ * @param regs
+ */
+void imx_uart_regs_disable_rx_irq(
+        imx_uart_regs_t *regs
+);
+
+/**
+ * Disables UART.
+ * @param regs
+ */
+void imx_uart_regs_disable(
+        imx_uart_regs_t *regs
+);
+
+/**
+ * Enables UART.
+ * @param regs
+ */
+void imx_uart_regs_enable(
+        imx_uart_regs_t *regs
+);
+
+/**
+ * Enables Receive Interrupt Requests.
+ * @param regs
+ */
+void imx_uart_regs_enable_rx_irq(
+        imx_uart_regs_t *regs
+);
+
+/**
+ * Transmits character to UART.
+ * @param regs
+ * @param ch
+ */
+void imx_uart_regs_tx_char(
+        imx_uart_regs_t *regs,
+        int ch
+);
 
